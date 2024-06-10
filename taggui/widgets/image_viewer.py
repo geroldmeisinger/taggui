@@ -1,3 +1,4 @@
+import imageio.v3 as iio
 from pathlib import Path
 
 from PySide6.QtCore import QModelIndex, QSize, Qt, Slot
@@ -7,6 +8,8 @@ from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 from models.proxy_image_list_model import ProxyImageListModel
 from utils.image import Image
 
+from PIL.ImageQt import ImageQt
+from PIL import Image as PilImage
 
 class ImageLabel(QLabel):
     def __init__(self):
@@ -25,10 +28,14 @@ class ImageLabel(QLabel):
 
     def load_image(self, image_path: Path):
         self.image_path = image_path
-        image_reader = QImageReader(str(image_path))
+
+        #image_reader = QImageReader(str(image_path))
         # Rotate the image according to the orientation tag.
-        image_reader.setAutoTransform(True)
-        pixmap = QPixmap.fromImageReader(image_reader)
+        #image_reader.setAutoTransform(True)
+        #pixmap = QPixmap.fromImageReader(image_reader)
+        img = iio.imread(str(image_path))
+        pil_image = PilImage.fromarray(img)
+        pixmap = QPixmap.fromImage(ImageQt(pil_image))
         pixmap.setDevicePixelRatio(self.devicePixelRatio())
         pixmap = pixmap.scaled(
             self.size() * pixmap.devicePixelRatio(),
